@@ -6,6 +6,7 @@ import { createRequire } from 'module';
 import { z } from 'zod';
 import { findDocs } from './findDocs.js';
 import { getVersion } from './getVersion.js';
+import { getBestPractices } from './getBestPractices.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('../package.json');
@@ -14,6 +15,15 @@ const server = new McpServer({
   name: 'Dev Proxy',
   version: packageJson.version
 });
+
+server.tool('GetBestPractices', 'Gets a list of best practices for configuring and using Dev Proxy. Call it for any code generation or operation involving Dev Proxy. These best practices do not change so once it has been called during the current session, you do not need to invoke it again. Returns a markdown string.',
+  {
+    title: 'Get best practices',
+  },
+  async () => ({
+    content: [{ type: 'text', text: await getBestPractices() }]
+  })
+);
 
 server.tool('FindDocs', 'Finds the relevant Dev Proxy documentation for the given query',
   {
