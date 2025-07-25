@@ -1,6 +1,6 @@
 {
   "name": "@devproxy/mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Model Context Protocol (MCP) server for Dev Proxy that enables AI assistants to interact with Dev Proxy.",
   "main": "dist/index.js",
   "type": "module",
