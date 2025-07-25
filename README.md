@@ -53,6 +53,14 @@ Use the following values:
 
 This MCP server exposes the following tools:
 
+#### GetBestPractices
+
+Gets a list of best practices for configuring and using Dev Proxy. Call it for any code generation or operation involving Dev Proxy. These best practices do not change so once it has been called during the current session, you do not need to invoke it again.
+
+```markdown
+_Best practices in markdown_
+```
+
 #### FindDocs
 
 Finds relevant Dev Proxy documentation related to a specific query.
