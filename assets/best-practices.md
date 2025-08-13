@@ -41,3 +41,7 @@
 ## File paths
 
 - File paths in Dev Proxy configuration files are always relative to the file where they're defined.
+
+## curl
+
+- When asked for `curl` commands, include `-ikx http://127.0.0.1:8000` so that curl will ignore SSL certificate errors and use Dev Proxy, eg. `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
