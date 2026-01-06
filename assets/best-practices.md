@@ -32,7 +32,7 @@
 
 ## Mocking
 
-- When defining mock responses, put the mocks with the longest (most specific) URLs first. Mocks are matched in the order they're defined so you don't want a generic mock to override a more specific one.
+- When defining mock responses or CrudApiPlugin actions, put entries with the longest (most specific) URLs first. Entries are matched in the order they're defined, so you don't want a generic pattern like /{id} to override a more specific one like /category/{name}.
 - Mocks with the nth property should be defined first, because they're considered more specific than mocks without that property.
 - To return dynamic Retry-After header value in mock responses, use `@dynamic` as the header's value
 - When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic.
