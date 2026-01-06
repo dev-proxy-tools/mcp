@@ -38,6 +38,38 @@
 - When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic.
 - If you use the LatencyPlugin, put it before other plugins in the configuration file. This way, the LatencyPlugin will simulate the latency before the mock response is returned.
 
+## CrudApiPlugin
+
+- When defining actions in the CrudApiPlugin, the order matters. Dev Proxy matches action URLs in the order they're defined in the configuration.
+- Always place actions with more specific URL patterns before generic catch-all patterns. For example, `/below/{max-price}` should come before `/{product-id}`.
+- If a generic pattern like `/{id}` is defined first, it will match URLs that should be handled by more specific patterns, potentially causing JSONPath query parsing errors.
+- Example of correct ordering:
+  ```json
+  {
+    "action": "getMany",
+    "url": "/below/{max-price}",
+    "query": "$.[?(@.price < {max-price})]"
+  },
+  {
+    "action": "getOne",
+    "url": "/{product-id}",
+    "query": "$.[?(@.id == {product-id})]"
+  }
+  ```
+- Example of incorrect ordering (will cause issues):
+  ```json
+  {
+    "action": "getOne",
+    "url": "/{product-id}",
+    "query": "$.[?(@.id == {product-id})]"
+  },
+  {
+    "action": "getMany",
+    "url": "/below/{max-price}",
+    "query": "$.[?(@.price < {max-price})]"
+  }
+  ```
+
 ## File paths
 
 - File paths in Dev Proxy configuration files are always relative to the file where they're defined.
