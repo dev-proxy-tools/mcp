@@ -43,6 +43,12 @@
     "node": ">=20.0.0"
   },
   "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "server.json"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1"
   },
