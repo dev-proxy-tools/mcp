@@ -42,6 +42,13 @@
 
 - File paths in Dev Proxy configuration files are always relative to the file where they're defined.
 
+## Hot reload
+
+- Dev Proxy supports hot reload of configuration files (v2.1.0+). When you modify the configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
+- Hot reload works for the main configuration file (devproxyrc.json/devproxyrc.jsonc) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
+- You don't need to manually restart Dev Proxy after making configuration changes - just save the file and the changes take effect automatically.
+- Hot reload helps you iterate faster when developing and testing different proxy configurations.
+
 ## curl
 
 - When asked for `curl` commands, include `-ikx http://127.0.0.1:8000` so that curl will ignore SSL certificate errors and use Dev Proxy, eg. `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
