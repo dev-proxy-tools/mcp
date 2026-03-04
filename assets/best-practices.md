@@ -2,9 +2,11 @@
 
 ## Configuration files
 
-- Dev Proxy configuration file is named devproxyrc.json or devproxyrc.jsonc (if you want to include comments)
+- Dev Proxy configuration file is named devproxyrc.json, devproxyrc.jsonc (if you want to include comments), or devproxyrc.yaml/devproxyrc.yml (v2.2.0+)
 - For clarity, store all Dev Proxy files in the .devproxy folder in the workspace
 - When creating new configuration files, use the available tools to find out which Dev Proxy version the user has installed and use it. Schema version must match the installed Dev Proxy version.
+- When the user has Dev Proxy v2.2.0+, you can create YAML configuration files using `devproxy config new --format yaml`.
+- Use `devproxy config validate` (v2.2.0+) to validate configuration files before running Dev Proxy.
     - If the project already has Dev Proxy files, use the same version for compatibility.
     - Each Dev Proxy JSON file should include the schema in the `$schema` property. The file contents should be valid according to that schema.
 - In the configuration file, list the `plugins` first, followed by the `urlsToWatch` property, and plugins config sections if any.
@@ -35,6 +37,7 @@
 - When defining mock responses or CrudApiPlugin actions, put entries with the longest (most specific) URLs first. Entries are matched in the order they're defined, so you don't want a generic pattern like /{id} to override a more specific one like /category/{name}.
 - Mocks with the nth property should be defined first, because they're considered more specific than mocks without that property.
 - To return dynamic Retry-After header value in mock responses, use `@dynamic` as the header's value
+- To return a dynamic Retry-After header value with a specific initial value, use `@dynamic=initialvalue` (e.g. `@dynamic=120`) as the header's value (v2.2.0+). This is supported in GenericRandomErrorPlugin.
 - When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic.
 - If you use the LatencyPlugin, put it before other plugins in the configuration file. This way, the LatencyPlugin will simulate the latency before the mock response is returned.
 
@@ -45,9 +48,20 @@
 ## Hot reload
 
 - Dev Proxy supports hot reload of configuration files (v2.1.0+). When you modify the configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
-- Hot reload works for the main configuration file (devproxyrc.json/devproxyrc.jsonc) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
+- Hot reload works for the main configuration file (devproxyrc.json/devproxyrc.jsonc/devproxyrc.yaml/devproxyrc.yml) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
 - You don't need to manually restart Dev Proxy after making configuration changes - just save the file and the changes take effect automatically.
 - Hot reload helps you iterate faster when developing and testing different proxy configurations.
+- To disable hot reload, use the `--no-watch` flag (v2.2.0+). This is useful when running Dev Proxy in CI/CD pipelines or automated environments where file watching is unnecessary.
+
+## Detached mode
+
+- Dev Proxy can run in detached (background) mode (v2.2.0+). This is useful for CI/CD pipelines, automated testing, and agent-driven workflows where Dev Proxy needs to run without an interactive terminal.
+- When running in detached mode, use `--output json` to get structured, machine-readable output that can be parsed by scripts and agents.
+
+## Output format
+
+- Use `--output json` (v2.2.0+) to get structured JSON output from Dev Proxy. This is ideal for automation, CI/CD pipelines, and agent-driven workflows.
+- Use `--output text` (default) for human-readable output in interactive terminal sessions.
 
 ## curl
 
