@@ -57,6 +57,9 @@
 
 - Dev Proxy can run in detached (background) mode (v2.2.0+). This is useful for CI/CD pipelines, automated testing, and agent-driven workflows where Dev Proxy needs to run without an interactive terminal.
 - When running in detached mode, use `--output json` to get structured, machine-readable output that can be parsed by scripts and agents.
+- For detached mode and CI/CD scenarios, use `--port 0` (or set `port` to `0` in the configuration file) to let the OS assign a random available port. This avoids port conflicts when running multiple Dev Proxy instances in parallel. Similarly, use `--api-port 0` for the Dev Proxy API port.
+- Combine random ports with `--as-system-proxy false` to prevent Dev Proxy from modifying system proxy settings. This way, each instance runs in isolation and only intercepts requests from applications explicitly configured to use its address and port.
+- When using random ports, use `devproxy status` to find the actual assigned port, API URL, PID, and other details of the running instance.
 
 ## Output format
 
