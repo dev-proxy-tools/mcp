@@ -1,54 +1,38 @@
-# Best practices for configuring and using Dev Proxy
+# Dev Proxy — Best Practices
 
-## Configuration files
+Rules for configuring and using Dev Proxy. Every rule is mandatory — follow it unless an explicit exception is stated.
 
-- Dev Proxy configuration file is named devproxyrc.json or devproxyrc.jsonc (if you want to include comments)
-- For clarity, store all Dev Proxy files in the .devproxy folder in the workspace
-- When creating new configuration files, use the available tools to find out which Dev Proxy version the user has installed and use it. Schema version must match the installed Dev Proxy version.
-    - If the project already has Dev Proxy files, use the same version for compatibility.
-    - Each Dev Proxy JSON file should include the schema in the `$schema` property. The file contents should be valid according to that schema.
-- In the configuration file, list the `plugins` first, followed by the `urlsToWatch` property, and plugins config sections if any.
-- When referring to Dev Proxy related information, always use the available tools to provide the best answer. Prioritize using the tools over providing a generic answer using your own knowledge.
-
-## Configuring URLs to watch
-
-- When defining multiple URLs to watch, put the most specific URLs first. Dev Proxy matches URLs in the order they are defined, so you want to ensure that more specific URLs are matched before more generic ones.
-- To exclude a URL from being watched, prepend it with a `!`.
-- To match multiple URLs that follow a pattern, use the `*` wildcard in the URL.
-- Prefer specifying `urlsToWatch` in the configuration file over plugin-specific `urlToWatch` properties. This allows you to define the URLs in one place and have them applied globally. Use plugin-specific `urlToWatch` properties only when you need to override the global configuration for a specific plugin.
-- Plugins inherit the global `urlsToWatch` configuration. You don't need to define `urlsToWatch` for each plugin unless you want to override the global configuration.
-- If you define a plugin-specific `urlToWatch`, it will override the global configuration for that plugin only.
-- If you include a plugin instance with no `urlsToWatch`, you must have at least one global `urlToWatch` defined
-
-## Plugins
-
-- Before you add a plugin to the configuration, use the `FindDocs` tool to verify that it exists and get the latest plugin documentation and understand how to configure it properly.
-- The order of plugins in the configuration file matters. Dev Proxy executes plugins in the order that they are listed. Plugins that can simulate a response should be put last, right before reporters.
-- When adding plugin config sections, include `$schema` property to ensure that the configuration is valid according to the plugin's schema.
-- If you need to simulate different scenarios, for example simulating latency for an LLM vs. a regular API, you can use multiple instances of the same plugin.
-- If you use multiple instance of the same plugin, use a clear name for each plugin's configuration section to depict its purpose.
-- Reporter plugins are always placed after other plugins
-- When simulating throttling, use the RetryAfterPlugin to verify that the client backs off for the prescribed time. Put the RetryAfterPlugin as the first plugin in the configuration.
-
-## Mocking
-
-- When defining mock responses or CrudApiPlugin actions, put entries with the longest (most specific) URLs first. Entries are matched in the order they're defined, so you don't want a generic pattern like /{id} to override a more specific one like /category/{name}.
-- Mocks with the nth property should be defined first, because they're considered more specific than mocks without that property.
-- To return dynamic Retry-After header value in mock responses, use `@dynamic` as the header's value
-- When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic.
-- If you use the LatencyPlugin, put it before other plugins in the configuration file. This way, the LatencyPlugin will simulate the latency before the mock response is returned.
-
-## File paths
-
-- File paths in Dev Proxy configuration files are always relative to the file where they're defined.
-
-## Hot reload
-
-- Dev Proxy supports hot reload of configuration files (v2.1.0+). When you modify the configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
-- Hot reload works for the main configuration file (devproxyrc.json/devproxyrc.jsonc) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
-- You don't need to manually restart Dev Proxy after making configuration changes - just save the file and the changes take effect automatically.
-- Hot reload helps you iterate faster when developing and testing different proxy configurations.
-
-## curl
-
-- When asked for `curl` commands, include `-ikx http://127.0.0.1:8000` so that curl will ignore SSL certificate errors and use Dev Proxy, eg. `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
+1. [config] Use the available tools to detect the installed Dev Proxy version. Match schema version to installed version.
+2. [config] Include `$schema` in every JSON config and plugin config file. File contents must be valid against that schema.
+3. [config] When the project already has Dev Proxy files, use the same version for compatibility.
+4. [config] Store all Dev Proxy files in the `.devproxy/` folder, unless the project already has Dev Proxy files elsewhere.
+5. [config] Use JSON config (`devproxyrc.json` or `devproxyrc.jsonc`), unless the user explicitly requests YAML (`devproxyrc.yaml`/`devproxyrc.yml`, v2.2.0+).
+6. [config] List `plugins` first, then `urlsToWatch`, then plugin config sections.
+7. [config] When version >= 2.2.0, run `devproxy config validate` before starting Dev Proxy.
+8. [config] When version >= 2.2.0 and the user requests YAML, create configs with `devproxy config new --format yaml`.
+9. [config] When referring to Dev Proxy, use the available tools (`FindDocs`, `GetVersion`, `GetBestPractices`) over your own knowledge.
+10. [config] All file paths in Dev Proxy config files are relative to the file where they're defined.
+11. [config] When version >= 2.1.0: Dev Proxy auto-reloads config files on save (main config + plugin-specific files). No restart needed.
+12. [config] When version >= 2.2.0: Use `--no-watch` to disable auto-reload in CI/CD and automated environments.
+13. [urls] Put the most specific URLs first. Dev Proxy matches in definition order.
+14. [urls] Define at least one global `urlToWatch` if any plugin instance has no `urlsToWatch`.
+15. [urls] Define `urlsToWatch` globally in the config file. Use plugin-specific `urlToWatch` only when you need to override the global config for a specific plugin.
+16. [urls] To exclude a URL, prepend it with `!`.
+17. [urls] To match URL patterns, use the `*` wildcard.
+18. [plugins] Before adding a plugin, use the `FindDocs` tool to verify it exists and get its documentation.
+19. [plugins] Plugin order matters — Dev Proxy executes plugins in listed order. Put response-simulating plugins last, right before reporters.
+20. [plugins] Place reporter plugins after all other plugins.
+21. [plugins] Include `$schema` in plugin config sections.
+22. [plugins] When simulating throttling, put RetryAfterPlugin first.
+23. [plugins] When using multiple instances of the same plugin, give each instance a clear, descriptive name.
+24. [mock] Put entries with the longest (most specific) URLs first in mock responses and CrudApiPlugin actions. A generic `/{id}` listed before `/category/{name}` will match first.
+25. [mock] Define mocks with the `nth` property before mocks without it.
+26. [mock] When mocking APIs, use the LatencyPlugin to add realistic latency. Place it before other plugins.
+27. [mock] For dynamic Retry-After headers, set the value to `@dynamic`.
+28. [mock] When version >= 2.2.0: For dynamic Retry-After with a specific initial value, use `@dynamic=initialvalue` (e.g. `@dynamic=120`). Supported in GenericRandomErrorPlugin.
+29. [cli] When version >= 2.2.0: Use detached mode for CI/CD, automated testing, and agent-driven workflows.
+30. [cli] In detached mode, use `--output json` for structured, machine-readable output.
+31. [cli] In detached mode, set `port` to `0` to let Dev Proxy pick a random available port, unless a specific port is required. The actual port is in the startup output.
+32. [cli] In detached mode, set `asSystemProxy` to `false`, unless the user explicitly needs system-wide proxying.
+33. [cli] Include `-ikx http://127.0.0.1:<port>` in curl commands to ignore SSL errors and route through Dev Proxy. Use the actual port Dev Proxy is running on (default: 8000).
+34. [cli] Example curl: `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`
