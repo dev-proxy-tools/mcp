@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "Node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
     "lib": ["esnext", "dom", "dom.iterable"],
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
