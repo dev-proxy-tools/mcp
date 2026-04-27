@@ -3,6 +3,8 @@
 ## Configuration files
 
 - Dev Proxy configuration file is named devproxyrc.json or devproxyrc.jsonc (if you want to include comments)
+- Dev Proxy also supports YAML configuration files named devproxyrc.yaml or devproxyrc.yml (v2.2.0+). When creating a YAML config, use `devproxy config new --format yaml`.
+- To validate a configuration file before starting Dev Proxy, use `devproxy config validate` (v2.2.0+).
 - For clarity, store all Dev Proxy files in the .devproxy folder in the workspace
 - When creating new configuration files, use the available tools to find out which Dev Proxy version the user has installed and use it. Schema version must match the installed Dev Proxy version.
     - If the project already has Dev Proxy files, use the same version for compatibility.
@@ -35,6 +37,7 @@
 - When defining mock responses or CrudApiPlugin actions, put entries with the longest (most specific) URLs first. Entries are matched in the order they're defined, so you don't want a generic pattern like /{id} to override a more specific one like /category/{name}.
 - Mocks with the nth property should be defined first, because they're considered more specific than mocks without that property.
 - To return dynamic Retry-After header value in mock responses, use `@dynamic` as the header's value
+- To return a dynamic Retry-After header value with a specific initial value, use `@dynamic=initialvalue` (e.g. `@dynamic=120`). Supported in GenericRandomErrorPlugin (v2.2.0+).
 - When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic.
 - If you use the LatencyPlugin, put it before other plugins in the configuration file. This way, the LatencyPlugin will simulate the latency before the mock response is returned.
 
@@ -48,7 +51,16 @@
 - Hot reload works for the main configuration file (devproxyrc.json/devproxyrc.jsonc) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
 - You don't need to manually restart Dev Proxy after making configuration changes - just save the file and the changes take effect automatically.
 - Hot reload helps you iterate faster when developing and testing different proxy configurations.
+- To disable hot reload (e.g. in CI/CD or automated environments), use the `--no-watch` flag (v2.2.0+).
+
+## Detached mode
+
+- Dev Proxy can run in detached (background) mode (v2.2.0+). This is useful for CI/CD pipelines, automated testing, and agent-driven workflows where Dev Proxy needs to run without an interactive terminal.
+- When running in detached mode, use `--output json` to get structured, machine-readable output that can be parsed by scripts and agents.
+- For detached mode and CI/CD scenarios, set `port` to `0` in the configuration file (or use `--port 0` on the command line) to let the OS assign a random available port. This avoids port conflicts when running multiple Dev Proxy instances in parallel. Similarly, use `--api-port 0` for the Dev Proxy API port.
+- Combine random ports with `asSystemProxy` set to `false` in the configuration file (or `--as-system-proxy false` on the command line) to prevent Dev Proxy from modifying system proxy settings. This way, each instance runs in isolation and only intercepts requests from applications explicitly configured to use its address and port.
+- When using random ports, use `devproxy status` to find the actual assigned port, API URL, PID, and other details of the running instance.
 
 ## curl
 
-- When asked for `curl` commands, include `-ikx http://127.0.0.1:8000` so that curl will ignore SSL certificate errors and use Dev Proxy, eg. `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
+- When asked for `curl` commands, include `-ikx http://127.0.0.1:<port>` so that curl will ignore SSL certificate errors and use Dev Proxy. Use the actual port Dev Proxy is running on (default: 8000), eg. `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
