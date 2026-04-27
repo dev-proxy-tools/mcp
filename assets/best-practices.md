@@ -3,8 +3,8 @@
 ## Configuration files
 
 - Dev Proxy configuration file is named devproxyrc.json or devproxyrc.jsonc (if you want to include comments)
-- Dev Proxy also supports YAML configuration files named devproxyrc.yaml or devproxyrc.yml (v2.2.0+). When creating a YAML config, use `devproxy config new --format yaml`.
-- To validate a configuration file before starting Dev Proxy, use `devproxy config validate` (v2.2.0+).
+- Dev Proxy also supports YAML configuration files named devproxyrc.yaml or devproxyrc.yml. When creating a YAML config, use `devproxy config new --format yaml`.
+- To validate a configuration file before starting Dev Proxy, use `devproxy config validate`.
 - For clarity, store all Dev Proxy files in the .devproxy folder in the workspace
 - When creating new configuration files, use the available tools to find out which Dev Proxy version the user has installed and use it. Schema version must match the installed Dev Proxy version.
     - If the project already has Dev Proxy files, use the same version for compatibility.
@@ -39,7 +39,7 @@
 - When defining mock responses or CrudApiPlugin actions, put entries with the longest (most specific) URLs first. Entries are matched in the order they're defined, so you don't want a generic pattern like /{id} to override a more specific one like /category/{name}.
 - Mocks with the nth property should be defined first, because they're considered more specific than mocks without that property.
 - To return dynamic Retry-After header value in mock responses, use `@dynamic` as the header's value
-- To return a dynamic Retry-After header value with a specific initial value, use `@dynamic=initialvalue` (e.g. `@dynamic=120`). Supported in GenericRandomErrorPlugin (v2.2.0+).
+- To return a dynamic Retry-After header value with a specific initial value, use `@dynamic=initialvalue` (e.g. `@dynamic=120`). Supported in GenericRandomErrorPlugin.
 - When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic. See the Plugins section for the correct plugin ordering.
 
 ## File paths
@@ -48,20 +48,20 @@
 
 ## Hot reload
 
-- Dev Proxy supports hot reload of configuration files (v2.1.0+). When you modify a configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
+- Dev Proxy supports hot reload of configuration files. When you modify a configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
 - Hot reload works for all configuration file types: the main configuration file (JSON, JSONC, or YAML) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
 - You don't need to manually restart Dev Proxy after making configuration changes - just save the file and the changes take effect automatically.
-- To disable hot reload (e.g. in CI/CD or automated environments), use the `--no-watch` flag (v2.2.0+).
+- To disable hot reload (e.g. in CI/CD or automated environments), use the `--no-watch` flag.
 
 ## Detached mode
 
-- Dev Proxy can run in detached (background) mode (v2.2.0+). This is useful for CI/CD pipelines, automated testing, and agent-driven workflows where Dev Proxy needs to run without an interactive terminal.
+- Dev Proxy can run in detached (background) mode. This is useful for CI/CD pipelines, automated testing, and agent-driven workflows where Dev Proxy needs to run without an interactive terminal.
 - When running in detached mode, use `--output json` to get structured, machine-readable output that can be parsed by scripts and agents.
 - For detached mode and CI/CD scenarios, set `port` to `0` in the configuration file (or use `--port 0` on the command line) to let the OS assign a random available port. This avoids port conflicts when running multiple Dev Proxy instances in parallel. Similarly, use `--api-port 0` for the Dev Proxy API port.
 - Combine random ports with `asSystemProxy` set to `false` in the configuration file (or `--as-system-proxy false` on the command line) to prevent Dev Proxy from modifying system proxy settings. This way, each instance runs in isolation and only intercepts requests from applications explicitly configured to use its address and port.
-- When `asSystemProxy` is `false`, multiple Dev Proxy instances can run in parallel on the same machine (v2.3.0+). Each instance should use its own random port and configuration file.
+- When `asSystemProxy` is `false`, multiple Dev Proxy instances can run in parallel on the same machine. Each instance should use its own random port and configuration file.
 - When using random ports, use `devproxy status` to find the actual assigned port, API URL, PID, and other details of the running instance.
-- The proxy URL is printed in the startup output (v2.3.0+). When using `--output json`, parse the proxy URL from the JSON output to configure your application.
+- The proxy URL is printed in the startup output. When using `--output json`, parse the proxy URL from the JSON output to configure your application.
 
 ## curl
 
