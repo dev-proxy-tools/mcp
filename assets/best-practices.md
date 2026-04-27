@@ -59,7 +59,9 @@
 - When running in detached mode, use `--output json` to get structured, machine-readable output that can be parsed by scripts and agents.
 - For detached mode and CI/CD scenarios, set `port` to `0` in the configuration file (or use `--port 0` on the command line) to let the OS assign a random available port. This avoids port conflicts when running multiple Dev Proxy instances in parallel. Similarly, use `--api-port 0` for the Dev Proxy API port.
 - Combine random ports with `asSystemProxy` set to `false` in the configuration file (or `--as-system-proxy false` on the command line) to prevent Dev Proxy from modifying system proxy settings. This way, each instance runs in isolation and only intercepts requests from applications explicitly configured to use its address and port.
+- When `asSystemProxy` is `false`, multiple Dev Proxy instances can run in parallel on the same machine (v2.3.0+). Each instance should use its own random port and configuration file.
 - When using random ports, use `devproxy status` to find the actual assigned port, API URL, PID, and other details of the running instance.
+- In detached mode, the proxy URL is printed in the startup output (v2.3.0+). Parse this from the JSON output when using `--output json`.
 
 ## curl
 
