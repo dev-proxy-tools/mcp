@@ -25,12 +25,14 @@
 ## Plugins
 
 - Before you add a plugin to the configuration, use the `FindDocs` tool to verify that it exists and get the latest plugin documentation and understand how to configure it properly.
-- The order of plugins in the configuration file matters. Dev Proxy executes plugins in the order that they are listed. Plugins that can simulate a response should be put last, right before reporters.
-- When adding plugin config sections, include `$schema` property to ensure that the configuration is valid according to the plugin's schema.
+- The order of plugins in the configuration file matters. Dev Proxy executes plugins in the order they are listed. Use this order (top to bottom):
+    1. RetryAfterPlugin (if simulating throttling — must be first to verify client backs off)
+    2. LatencyPlugin (if simulating realistic response times — adds delay before responses)
+    3. Other analysis/guidance plugins (e.g. GraphMinimalPermissionsGuidancePlugin)
+    4. Response-simulating plugins (e.g. MockResponsePlugin, CrudApiPlugin)
+    5. Reporter plugins (always last)
 - If you need to simulate different scenarios, for example simulating latency for an LLM vs. a regular API, you can use multiple instances of the same plugin.
-- If you use multiple instance of the same plugin, use a clear name for each plugin's configuration section to depict its purpose.
-- Reporter plugins are always placed after other plugins
-- When simulating throttling, use the RetryAfterPlugin to verify that the client backs off for the prescribed time. Put the RetryAfterPlugin as the first plugin in the configuration.
+- If you use multiple instances of the same plugin, use a clear name for each plugin's configuration section to depict its purpose.
 
 ## Mocking
 
@@ -38,8 +40,7 @@
 - Mocks with the nth property should be defined first, because they're considered more specific than mocks without that property.
 - To return dynamic Retry-After header value in mock responses, use `@dynamic` as the header's value
 - To return a dynamic Retry-After header value with a specific initial value, use `@dynamic=initialvalue` (e.g. `@dynamic=120`). Supported in GenericRandomErrorPlugin (v2.2.0+).
-- When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic.
-- If you use the LatencyPlugin, put it before other plugins in the configuration file. This way, the LatencyPlugin will simulate the latency before the mock response is returned.
+- When simulating APIs and their responses, consider using the LatencyPlugin to make the API responses feel more realistic. See the Plugins section for the correct plugin ordering.
 
 ## File paths
 
@@ -47,10 +48,9 @@
 
 ## Hot reload
 
-- Dev Proxy supports hot reload of configuration files (v2.1.0+). When you modify the configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
-- Hot reload works for the main configuration file (devproxyrc.json/devproxyrc.jsonc) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
+- Dev Proxy supports hot reload of configuration files (v2.1.0+). When you modify a configuration file while Dev Proxy is running, it automatically detects the changes and restarts with the new configuration.
+- Hot reload works for all configuration file types: the main configuration file (JSON, JSONC, or YAML) and plugin-specific configuration files (mock files, CRUD API data files, etc.).
 - You don't need to manually restart Dev Proxy after making configuration changes - just save the file and the changes take effect automatically.
-- Hot reload helps you iterate faster when developing and testing different proxy configurations.
 - To disable hot reload (e.g. in CI/CD or automated environments), use the `--no-watch` flag (v2.2.0+).
 
 ## Detached mode
@@ -61,8 +61,8 @@
 - Combine random ports with `asSystemProxy` set to `false` in the configuration file (or `--as-system-proxy false` on the command line) to prevent Dev Proxy from modifying system proxy settings. This way, each instance runs in isolation and only intercepts requests from applications explicitly configured to use its address and port.
 - When `asSystemProxy` is `false`, multiple Dev Proxy instances can run in parallel on the same machine (v2.3.0+). Each instance should use its own random port and configuration file.
 - When using random ports, use `devproxy status` to find the actual assigned port, API URL, PID, and other details of the running instance.
-- In detached mode, the proxy URL is printed in the startup output (v2.3.0+). Parse this from the JSON output when using `--output json`.
+- The proxy URL is printed in the startup output (v2.3.0+). When using `--output json`, parse the proxy URL from the JSON output to configure your application.
 
 ## curl
 
-- When asked for `curl` commands, include `-ikx http://127.0.0.1:<port>` so that curl will ignore SSL certificate errors and use Dev Proxy. Use the actual port Dev Proxy is running on (default: 8000), eg. `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
+- When asked for `curl` commands, include `-ikx http://127.0.0.1:<port>` to ignore SSL certificate errors and route through Dev Proxy. Replace `<port>` with the actual port Dev Proxy is running on (default: 8000). Example: `curl -ikx http://127.0.0.1:8000 https://jsonplaceholder.typicode.com/posts/1`.
