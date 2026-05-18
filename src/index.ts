@@ -56,8 +56,8 @@ server.tool('CreateJwt', 'Creates a JSON Web Token (JWT) using the Dev Proxy jwt
     roles: z.array(z.string()).optional().describe('The roles to include in the token'),
     scopes: z.array(z.string()).optional().describe('The scopes to include in the token'),
     claims: z.array(z.string()).optional().describe('Custom claims to include in the token in the format name:value'),
-    validFor: z.number().optional().describe('The token validity in minutes'),
-    signingKey: z.string().optional().describe('The signing key for the token. Must be at least 32 characters'),
+    validFor: z.number().optional().default(60).describe('The token validity in minutes'),
+    signingKey: z.string().min(32).optional().describe('The signing key for the token. Must be at least 32 characters'),
   },
   {
     title: 'Create JWT',
