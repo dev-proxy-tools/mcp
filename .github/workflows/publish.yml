@@ -47,11 +47,7 @@ jobs:
       - name: Publish @next
         if: ${{ steps.check_beta.outputs.is_beta == 'true' }}
         run: npm publish --access public --provenance --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @latest
         if: ${{ steps.check_beta.outputs.is_beta == 'false' }}
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
