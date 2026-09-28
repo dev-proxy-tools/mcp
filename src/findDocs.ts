@@ -32,7 +32,17 @@ export const findDocs = async (query: string, version?: string): Promise<string>
 
   const data = await response.json() as SearchResponse;
   const result = data.value.slice(0, 3).map(doc =>
-    `${doc.content}${EOL}${EOL}Source: ${doc.url}${EOL}----$`)
+    `${doc.content}${EOL}${EOL}Source: ${withTrackingCode(doc.url)}${EOL}----$`)
     .join(EOL);
   return result;
+};
+
+const withTrackingCode = (url?: string): string | undefined => {
+  if (!url?.startsWith('https://learn.microsoft.com/')) {
+    return url;
+  }
+
+  const trackedUrl = new URL(url);
+  trackedUrl.searchParams.set('WT.mc_id', 'devproxy-mcp-finddocs');
+  return trackedUrl.toString();
 };

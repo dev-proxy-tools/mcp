@@ -31,7 +31,7 @@ This package provides a Model Context Protocol (MCP) server interface to Dev Pro
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) LTS
-- [Dev Proxy](https://learn.microsoft.com/microsoft-cloud/dev/dev-proxy/get-started/set-up) installed globally
+- [Dev Proxy](https://learn.microsoft.com/microsoft-cloud/dev/dev-proxy/get-started/set-up?WT.mc_id=devproxy-mcp-readme) installed globally
 
 ## Usage
 
@@ -115,5 +115,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Related Projects
 
-- [Dev Proxy](https://learn.microsoft.com/microsoft-cloud/dev/dev-proxy/overview) - The core Dev Proxy tool
+- [Dev Proxy](https://learn.microsoft.com/microsoft-cloud/dev/dev-proxy/overview?WT.mc_id=devproxy-mcp-readme) - The core Dev Proxy tool
 - [Model Context Protocol (MCP)](https://modelcontextprotocol.io) - Protocol specification for AI assistant tools
